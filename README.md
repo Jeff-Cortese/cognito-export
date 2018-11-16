@@ -18,7 +18,7 @@ $ docker run -it \
 
 ### Get the data out of the container
 ```shell
-$ docker cp cognito_expot:./data ./data
+$ docker cp cognito_export:./data ./data
 ```
 
 ### Clean up
