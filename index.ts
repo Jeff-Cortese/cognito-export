@@ -61,7 +61,7 @@ const exportUsers = async (memberTableName: string, tenantTableName: string, dom
 
   console.log(`Fetching all items in table ${tenantTableName}...`);
   const tenants = await getAllItems(tenantTableName);
-  console.log(`Found ${tenantTableName.length} domains in table ${tenantTableName}`);
+  console.log(`Found ${tenantTableName.length} tenants in table ${tenantTableName}`);
 
   console.log(`Fetching all items in table ${domainTableName}...`);
   const domains = await getAllItems(domainTableName);
