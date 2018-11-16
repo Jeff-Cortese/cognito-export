@@ -18,6 +18,5 @@ $ docker cp cognito_export:./data ./data
 
 ### Clean up
 ```shell
-$ docker rm -f cognito_export
-$ docker rmi jeffcortese/cognito-export:0.0.1
+$ docker rm -f cognito_export && docker rmi jeffcortese/cognito-export:0.0.1
 ```
