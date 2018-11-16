@@ -1,11 +1,6 @@
 # cognito-export
 
-### Pull docker image
-```shell
-$ docker pull jeffcortese/cognito-export:0.0.1
-```
-
-### Run the image
+### Pull and Run the image
 ```shell
 $ docker run -it \
    --name cognito_export \
@@ -18,11 +13,10 @@ $ docker run -it \
 
 ### Get the data out of the container
 ```shell
-$ docker cp cognito_expot:./data ./data
+$ docker cp cognito_export:./data ./data
 ```
 
 ### Clean up
 ```shell
-$ docker rm -f cognito_export
-$ docker rmi jeffcortese/cognito-export:0.0.1
+$ docker rm -f cognito_export && docker rmi jeffcortese/cognito-export:0.0.1
 ```
