@@ -20,8 +20,14 @@ const accessKeyId = process.env.AWS_ACCESS_ID;
 const secretAccessKey = process.env.AWS_SECRET_KEY;
 const sessionToken = process.env.AWS_SESSION_TOKEN;
 const { stage, region } = cli.flags;
-const dynamo = new DynamoDB({ region, accessKeyId, secretAccessKey, sessionToken });
-const cognito = new CognitoIdentityServiceProvider({ region, accessKeyId, secretAccessKey, sessionToken });
+const awsConfig = {
+  region,
+  accessKeyId,
+  secretAccessKey,
+  sessionToken
+};
+const dynamo = new DynamoDB(awsConfig);
+const cognito = new CognitoIdentityServiceProvider(awsConfig);
 const names = moniker.generator([moniker.adjective, moniker.noun]);
 
 const exportUsers = async (memberTableName: string, tenantTableName: string, domainTableName: string) => {
