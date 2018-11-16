@@ -1,11 +1,6 @@
 # cognito-export
 
-### Pull docker image
-```shell
-$ docker pull jeffcortese/cognito-export:0.0.1
-```
-
-### Run the image
+### Pull and Run the image
 ```shell
 $ docker run -it \
    --name cognito_export \
