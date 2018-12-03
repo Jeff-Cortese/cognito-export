@@ -1,5 +1,5 @@
 import { CognitoIdentityServiceProvider, DynamoDB } from 'aws-sdk';
-import { uniq } from 'lodash';
+import { memoize, uniq } from 'lodash';
 import * as meow from 'meow';
 import * as jsonfile from 'jsonfile';
 import * as moniker from 'moniker';
@@ -92,19 +92,32 @@ const exportUsers = async (memberTableName: string, tenantTableName: string, dom
   console.log(`Data wrote to ${dataSubfolder}`);
 };
 
+const scrubbedEmailMemo = memoize(email => {
+  const domain = email.substring(email.indexOf('@'));
+  const name: string = names.choose();
+  const first = name.split('-')[0];
+  const last = name.split('-')[1];
+  const newEmail = `${name.replace('-', '.')}${domain}`;
+
+  return {
+    first,
+    last,
+    email: newEmail
+  };
+});
+
 const scrubPoolUser = (user) => {
   const oldEmail = (user.Attributes.find(attr => attr.Name === 'email') || { Name: 'email', Value: '' }).Value;
   if (oldEmail.endsWith('cleo.com') || oldEmail.endsWith('mailosaur.io')) {
     return user;
   }
 
-  const domain = oldEmail.substring(oldEmail.indexOf('@'));
-  const name: string = names.choose();
-  const first = name.split('-')[0];
-  const last = name.split('-')[1];
-  const newEmail = `${name.replace('-', '.')}${domain}`;
+  const { first, last, email: newEmail } = scrubbedEmailMemo(oldEmail);
+  const isUserNameAnEmail = user.Username.indexOf('@') >= 0;
+
   return {
     ...user,
+    Username: isUserNameAnEmail ? newEmail : user.Username,
     Attributes: user.Attributes
       .filter(attr => !['given_name', 'family_name', 'preferred_name', 'email'].includes(attr.Name))
       .concat([
@@ -121,9 +134,10 @@ const scrubMember = (member) => {
     return member;
   }
 
+  const { email } = scrubbedEmailMemo(member.email.S);
   return {
     ...member,
-    email: { S: `${names.choose()}${domain}` }
+    email: { S: email }
   };
 };
 
