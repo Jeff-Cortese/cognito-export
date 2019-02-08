@@ -161,7 +161,7 @@ const getAllUsers = async (poolId: string, accumedUsers = [], includeCustomAttrs
 
   try {
     await new Promise(res => setTimeout(res, 500));
-    const { Users: cognitoUsers, PaginationToken: nextPageToken } = await this.cognito.listUsers({ ...params, PaginationToken: pageToken }).promise();
+    const { Users: cognitoUsers, PaginationToken: nextPageToken } = await cognito.listUsers({ ...params, PaginationToken: pageToken }).promise();
     if (nextPageToken) {
       return this.getAllUsers(poolId, [...accumedUsers, ...cognitoUsers], includeCustomAttrs, nextPageToken);
     }
