@@ -152,24 +152,30 @@ const getAllItems = async (tableName: string, accumedMembers = [], startKey?): P
   return [...accumedMembers, ...items];
 };
 
-const getAllUsers = async (poolId: string, accumedUsers = [], pageToken?: string): Promise<any[]> => {
+const getAllUsers = async (poolId: string, accumedUsers = [], includeCustomAttrs = true, pageToken?: string) => {
+  const customAttributes = ['given_name', 'family_name', 'custom:company', 'custom:title'];
   const params = {
-    AttributesToGet: [
-      'given_name',
-      'family_name',
-      'custom:company',
-      'custom:title',
-      'email'
-    ],
-    UserPoolId: poolId
+    'AttributesToGet': ['email'].concat(includeCustomAttrs ? customAttributes : []),
+    'UserPoolId': poolId
   };
-  const { Users: cognitoUsers, PaginationToken: nextPageToken } = await cognito.listUsers({ ...params, PaginationToken: pageToken }).promise();
 
-  if (nextPageToken) {
-    return getAllUsers(poolId, [...accumedUsers, ...cognitoUsers], nextPageToken);
+  try {
+    await new Promise(res => setTimeout(res, 500));
+    const { Users: cognitoUsers, PaginationToken: nextPageToken } = await this.cognito.listUsers({ ...params, PaginationToken: pageToken }).promise();
+    if (nextPageToken) {
+      return this.getAllUsers(poolId, [...accumedUsers, ...cognitoUsers], includeCustomAttrs, nextPageToken);
+    }
+
+    return [...accumedUsers, ...cognitoUsers];
+  } catch (error) {
+    if (includeCustomAttrs &&
+      error.name === 'InvalidParameterException' &&
+      error.message.indexOf('One or more requested attributes do not exist') >= 0) {
+      return this.getAllUsers(poolId, accumedUsers, false, pageToken);
+    }
+
+    throw error;
   }
-
-  return [...accumedUsers, ...cognitoUsers];
 };
 
 (async () => {
