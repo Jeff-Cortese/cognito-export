@@ -163,7 +163,7 @@ const getAllUsers = async (poolId: string, accumedUsers = [], includeCustomAttrs
     await new Promise(res => setTimeout(res, 500));
     const { Users: cognitoUsers, PaginationToken: nextPageToken } = await cognito.listUsers({ ...params, PaginationToken: pageToken }).promise();
     if (nextPageToken) {
-      return this.getAllUsers(poolId, [...accumedUsers, ...cognitoUsers], includeCustomAttrs, nextPageToken);
+      return getAllUsers(poolId, [...accumedUsers, ...cognitoUsers], includeCustomAttrs, nextPageToken);
     }
 
     return [...accumedUsers, ...cognitoUsers];
@@ -171,7 +171,7 @@ const getAllUsers = async (poolId: string, accumedUsers = [], includeCustomAttrs
     if (includeCustomAttrs &&
       error.name === 'InvalidParameterException' &&
       error.message.indexOf('One or more requested attributes do not exist') >= 0) {
-      return this.getAllUsers(poolId, accumedUsers, false, pageToken);
+      return getAllUsers(poolId, accumedUsers, false, pageToken);
     }
 
     throw error;
